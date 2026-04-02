@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report an Issue</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        /* 🔝 TOP BAR */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            background: #007BFF;
+            color: white;
+            padding: 15px;
+        }
+
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            font-size: 22px;
+            margin-right: 10px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        /* 📷 Upload Box */
+        .upload-box {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        /* 📝 Text */
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* 📍 Map */
+        #map {
+            height: 300px;
+            margin: 10px 0 20px 0;
+        }
+
+        /* 📂 Dropdown */
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* ✅ Button */
+        button {
+            width: 100%;
+            padding: 15px;
+            background: green;
+            color: white;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkgreen;
+        }
+
+        /* 🧠 Helper text */
+        .hint {
+            font-size: 13px;
+            color: #555;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔝 TOP BAR -->
+<div class="top-bar">
+    <a href="#">←</a>
+    <h2>Report an Issue</h2>
+</div>
+
+<div class="container">
+
+<form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+    {% csrf_token %}
+
+    <!-- 📷 Upload Photo -->
+    <div class="upload-box">
+        <input type="file" name="image">
+        <p>📷 Upload Photo (optional)</p>
+    </div>
+
+    <!-- 📝 Description -->
+    <label><strong>📝 Description *</strong></label>
+    <textarea 
+        name="description" 
+        id="description"
+        placeholder="Describe the problem clearly (e.g., pothole size, danger level...)" 
+        required>
+    </textarea>
+    <div class="hint">Provide enough detail to help the municipality understand the issue.</div>
+
+    <!-- 📍 Location Instruction -->
+    <p><strong>📍 Select location on the map (click or drag the marker)</strong></p>
+
+    <!-- 📍 Map -->
+    <div id="map"></div>
+
+    <!-- Hidden Fields -->
+    <input type="hidden" name="latitude" id="lat">
+    <input type="hidden" name="longitude" id="lng">
+
+    <!-- 📂 Dropdown -->
+    <label><strong>📂 Issue Type *</strong></label>
+    <select name="issue_type" id="issue_type" required>
+        <option value="">-- Select Issue Type --</option>
+        <option value="pothole">Pothole</option>
+        <option value="water">Water Leak</option>
+        <option value="electricity">Electricity Issue</option>
+        <option value="other">Other</option>
+    </select>
+
+    <!-- ✅ Submit -->
+    <button type="submit">Submit Report</button>
+
+</form>
+
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    // Default coordinates
+    var defaultLat = -25.0;
+    var defaultLng = 28.0;
+
+    // Initialize map
+    var map = L.map('map').setView([defaultLat, defaultLng], 10);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add draggable marker
+    var marker = L.marker([defaultLat, defaultLng], {draggable: true}).addTo(map);
+
+    // Set initial values
+    document.getElementById('lat').value = defaultLat;
+    document.getElementById('lng').value = defaultLng;
+
+    // Update on drag
+    marker.on('dragend', function(e) {
+        var latLng = e.target.getLatLng();
+        document.getElementById('lat').value = latLng.lat;
+        document.getElementById('lng').value = latLng.lng;
+    });
+
+    // Update on click
+    map.on('click', function(e) {
+        var latLng = e.latlng;
+        marker.setLatLng(latLng);
+        document.getElementById('lat').value = latLng.lat;
+        document.getElementById('lng').value = latLng.lng;
+    });
+
+    // ✅ Validation + Feedback
+    function validateForm() {
+        var description = document.getElementById("description").value.trim();
+        var issueType = document.getElementById("issue_type").value;
+
+        if (description === "" || issueType === "") {
+            alert("Please fill in all required fields.");
+            return false;
+        }
+
+        alert("Submitting your report...");
+        return true;
+    }
+</script>
+
+</body>
+</html>

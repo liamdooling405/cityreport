@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Issue Submitted</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eef2f7, #dfe9f3);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #28a745;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            width: 100%;
+        }
+
+        .image-wrapper {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-image {
+            color: #888;
+            font-style: italic;
+        }
+
+        .info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .info p {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .map-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px 5px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #007BFF;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .info {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>✅ Report Submitted Successfully!</h1>
+        <p>Your issue has been recorded and will be reviewed by the municipality.</p>
+    </div>
+
+    <div class="card">
+
+        <div class="image-wrapper">
+            {% if issue.image %}
+                <img src="{{ issue.image.url }}" alt="Uploaded issue image">
+            {% else %}
+                <p class="no-image">📷 No image uploaded</p>
+            {% endif %}
+        </div>
+
+        <div class="info">
+            <p>
+                <strong>📌 Issue Type</strong>
+                {{ issue.get_issue_type_display }}
+            </p>
+            <p>
+                <strong>📝 Description</strong>
+                {{ issue.description }}
+            </p>
+            <p>
+                <strong>📍 Latitude</strong>
+                {{ issue.latitude }}
+            </p>
+            <p>
+                <strong>📍 Longitude</strong>
+                {{ issue.longitude }}
+            </p>
+        </div>
+
+        <div class="map-link">
+            <a class="btn btn-primary"
+               href="https://www.google.com/maps?q={{ issue.latitude }},{{ issue.longitude }}"
+               target="_blank">
+                📍 View on Map
+            </a>
+        </div>
+
+    </div>
+
+    <div class="actions">
+        <a class="btn btn-primary" href="/">➕ Report Another Issue</a>
+        <a class="btn btn-secondary" href="{% url 'my_reports' %}">📊 View My Reports</a>
+    </div>
+
+</div>
+
+</body>
+</html>
